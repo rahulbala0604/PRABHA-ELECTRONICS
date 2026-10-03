@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary: #0B1F3A;
+    --primary-light: #163B68;
+    --secondary: #1E3A8A; /* Royal Blue */
+    --accent: #F59E0B; /* Warm Orange / Amber */
+    --background: #F7F9FC;
+    --surface: #FFFFFF;
+    --text: #172033;
+    --muted: #6B7280;
+  }
+
+  body {
+    @apply text-text bg-background font-sans antialiased selection:bg-accent selection:text-white;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-accent text-white px-6 py-2.5 rounded-md font-semibold tracking-wide transition-all duration-300 hover:bg-accent-hover hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:scale-95;
+  }
+  .btn-secondary {
+    @apply bg-primary text-white px-6 py-2.5 rounded-md font-semibold tracking-wide transition-all duration-300 hover:bg-primary-light hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:scale-95;
+  }
+  .btn-outline {
+    @apply border-2 border-primary text-primary bg-transparent px-6 py-2.5 rounded-md font-semibold tracking-wide transition-all duration-300 hover:bg-primary hover:text-white active:scale-95;
+  }
+  
+  .glass-effect {
+    @apply bg-white/80 backdrop-blur-md border border-white/20;
+  }
+}
