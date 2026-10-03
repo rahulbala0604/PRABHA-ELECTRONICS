@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useToast } from './ToastContext';
 
 const CartContext = createContext();
 
@@ -7,6 +8,8 @@ export const useCart = () => {
 };
 
 export const CartProvider = ({ children }) => {
+  const { success } = useToast();
+  
   const [cartItems, setCartItems] = useState(() => {
     const savedCart = localStorage.getItem('prabhaCart');
     return savedCart ? JSON.parse(savedCart) : [];
@@ -28,6 +31,7 @@ export const CartProvider = ({ children }) => {
       }
       return [...prevItems, { ...product, quantity }];
     });
+    success(`${product.name} added to enquiry cart`);
   };
 
   const removeFromCart = (productId) => {

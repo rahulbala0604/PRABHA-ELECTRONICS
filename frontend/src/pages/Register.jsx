@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -13,6 +14,7 @@ const Register = () => {
   const { register } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { success } = useToast();
 
   const redirect = location.search ? location.search.split('=')[1] : '/account';
 
@@ -27,6 +29,7 @@ const Register = () => {
     setError(null);
     try {
       await register(name, email, password);
+      success('Account created successfully.');
       navigate(redirect);
     } catch (err) {
       setError(err.message);

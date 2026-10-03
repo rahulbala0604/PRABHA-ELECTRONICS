@@ -1,8 +1,19 @@
 const Enquiry = require('../models/Enquiry');
+const Product = require('../models/Product');
 
 const createEnquiry = async (req, res) => {
   try {
     const { customerName, phone, location, email, message, products } = req.body;
+    
+    // Validate if products are still active
+    if (products && products.length > 0) {
+      const productIds = products.map(p => p.product);
+      const activeProducts = await Product.find({ _id: { $in: productIds }, isActive: true });
+      if (activeProducts.length !== products.length) {
+        return res.status(400).json({ message: 'One or more products in your enquiry are no longer available. Please update your cart.' });
+      }
+    }
+
     const enquiry = await Enquiry.create({
       customerName, phone, location, email, message, products
     });

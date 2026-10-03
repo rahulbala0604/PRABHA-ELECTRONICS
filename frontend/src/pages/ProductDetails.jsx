@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ShoppingCart, Heart, ShieldCheck, Truck, RefreshCw, MessageCircle, ChevronRight, Share2, Star } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import ProductImage from '../components/ui/ProductImage';
+import { businessConfig } from '../config/businessConfig';
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -35,7 +37,7 @@ const ProductDetails = () => {
 
   const handleWhatsAppEnquiry = () => {
     const message = `Hello Prabha Electronics, I am interested in: *${product.name}* (Ref ID: ${product._id}). Could you provide more details?`;
-    window.open(`https://wa.me/919876543210?text=${encodeURIComponent(message)}`, '_blank');
+    window.open(`https://wa.me/${businessConfig.whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   if (loading) {
@@ -108,26 +110,45 @@ const ProductDetails = () => {
                <button className="absolute top-6 right-6 p-2.5 bg-white/80 backdrop-blur rounded-full text-gray-600 hover:text-accent hover:shadow-md transition-all z-10">
                  <Share2 size={20} />
                </button>
-               {/* Product Image Placeholder */}
-              <div className="w-full h-full bg-white m-4 rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 group-hover:scale-105 transition-transform duration-500">
-                <span className="text-gray-300 font-medium">Main Product Image</span>
-              </div>
+               <ProductImage 
+                 src={product.images?.[activeImage] || product.images?.[0]} 
+                 alt={product.name} 
+                 className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500" 
+                 containerClassName="w-full h-full bg-white m-4 rounded-2xl flex items-center justify-center shadow-sm border border-gray-100"
+               />
             </div>
             {/* Thumbnails */}
             <div className="grid grid-cols-4 gap-4">
-              {[0, 1, 2, 3].map((index) => (
-                <button 
-                  key={index}
-                  onClick={() => setActiveImage(index)}
-                  className={`aspect-square rounded-2xl border-2 flex items-center justify-center transition-all overflow-hidden bg-gray-50
-                    ${activeImage === index ? 'border-primary' : 'border-transparent hover:border-gray-200'}
-                  `}
-                >
-                  <div className="w-full h-full bg-white m-1 rounded-xl shadow-sm border border-gray-100 flex items-center justify-center">
-                    <span className="text-xs text-gray-400 font-medium">View {index + 1}</span>
-                  </div>
-                </button>
-              ))}
+                {product.images && product.images.length > 0 ? (
+                  product.images.map((img, index) => (
+                    <button 
+                      key={index}
+                      onClick={() => setActiveImage(index)}
+                      className={`aspect-square rounded-2xl border-2 flex items-center justify-center transition-all overflow-hidden bg-gray-50
+                        ${activeImage === index ? 'border-primary' : 'border-transparent hover:border-gray-200'}
+                      `}
+                    >
+                      <ProductImage 
+                        src={img} 
+                        alt={`${product.name} view ${index + 1}`} 
+                        className="w-full h-full object-contain p-2" 
+                        containerClassName="w-full h-full bg-white m-1 rounded-xl shadow-sm border border-gray-100 flex items-center justify-center"
+                      />
+                    </button>
+                  ))
+                ) : (
+                  [0, 1, 2, 3].map((index) => (
+                    <button 
+                      key={index}
+                      className={`aspect-square rounded-2xl border-2 flex items-center justify-center transition-all overflow-hidden bg-gray-50 border-transparent`}
+                      disabled
+                    >
+                      <div className="w-full h-full bg-white m-1 rounded-xl shadow-sm border border-gray-100 flex items-center justify-center">
+                        <span className="text-xs text-gray-400 font-medium">View {index + 1}</span>
+                      </div>
+                    </button>
+                  ))
+                )}
             </div>
           </div>
 
@@ -141,13 +162,8 @@ const ProductDetails = () => {
             <h1 className="text-3xl md:text-4xl font-extrabold text-primary mb-4 leading-tight tracking-tight">{product.name}</h1>
             
             <div className="flex items-center gap-4 mb-6">
-              <div className="flex items-center text-accent">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star key={star} size={18} fill={star <= Math.floor(product.rating || 5) ? "currentColor" : "none"} className={star > Math.floor(product.rating || 5) ? "text-gray-300" : ""} />
-                ))}
-              </div>
-              <span className="text-sm font-medium text-gray-500 underline decoration-gray-300 underline-offset-4 cursor-pointer hover:text-primary transition-colors">
-                {product.numReviews || 0} Reviews
+              <span className={`text-sm font-bold px-3 py-1 rounded border ${product.stock > 0 ? 'bg-green-50 text-green-600 border-green-100' : 'bg-red-50 text-red-600 border-red-100'}`}>
+                {product.stock > 0 ? 'IN STOCK' : 'OUT OF STOCK'}
               </span>
             </div>
 
@@ -186,7 +202,7 @@ const ProductDetails = () => {
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
               {/* Quantity */}
-              <div className="flex items-center justify-between border-2 border-gray-200 rounded-xl h-14 w-full sm:w-36 bg-gray-50">
+              <div className="flex items-center justify-between border-2 border-gray-200 rounded-xl h-14 w-full sm:w-36 bg-gray-50 flex-shrink-0">
                 <button 
                   onClick={() => setQuantity(q => Math.max(1, q - 1))}
                   className="w-12 h-full flex items-center justify-center text-gray-500 hover:text-primary transition-colors font-bold text-lg"
@@ -207,20 +223,22 @@ const ProductDetails = () => {
                 </button>
               </div>
               
-              <button 
-                onClick={handleAddToCart}
-                disabled={product.stock === 0}
-                className={`flex-1 h-14 flex items-center justify-center gap-2 rounded-xl font-bold tracking-wide transition-all shadow-sm
-                  ${product.stock > 0 ? 'bg-primary text-white hover:bg-primary-light hover:shadow-lg hover:-translate-y-0.5' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}
-                `}
-              >
-                <ShoppingCart size={20} />
-                {product.stock > 0 ? 'ADD TO ENQUIRY CART' : 'OUT OF STOCK'}
-              </button>
+              <div className="flex gap-4 w-full">
+                <button 
+                  onClick={handleAddToCart}
+                  disabled={product.stock === 0}
+                  className={`flex-1 h-14 flex items-center justify-center gap-2 rounded-xl font-bold tracking-wide transition-all shadow-sm text-sm sm:text-base
+                    ${product.stock > 0 ? 'bg-primary text-white hover:bg-primary-light hover:shadow-lg hover:-translate-y-0.5' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}
+                  `}
+                >
+                  <ShoppingCart size={20} />
+                  {product.stock > 0 ? 'ADD TO ENQUIRY CART' : 'OUT OF STOCK'}
+                </button>
 
-              <button className="h-14 w-14 flex-shrink-0 flex items-center justify-center border-2 border-gray-200 rounded-xl text-gray-500 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-all">
-                <Heart size={22} />
-              </button>
+                <button className="h-14 w-14 flex-shrink-0 flex items-center justify-center border-2 border-gray-200 rounded-xl text-gray-500 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-all">
+                  <Heart size={22} />
+                </button>
+              </div>
             </div>
 
             {/* WhatsApp Enquiry CTA */}
@@ -255,7 +273,6 @@ const ProductDetails = () => {
           <div className="flex items-center gap-8 border-b border-gray-200 mb-8 overflow-x-auto whitespace-nowrap pb-1">
             <button className="pb-4 font-bold text-primary border-b-2 border-primary text-lg px-2">Description</button>
             <button className="pb-4 font-bold text-gray-400 hover:text-gray-600 border-b-2 border-transparent text-lg px-2 transition-colors">Specifications</button>
-            <button className="pb-4 font-bold text-gray-400 hover:text-gray-600 border-b-2 border-transparent text-lg px-2 transition-colors">Reviews</button>
           </div>
           
           <div className="bg-gray-50 p-8 md:p-10 rounded-3xl border border-gray-100 max-w-4xl">

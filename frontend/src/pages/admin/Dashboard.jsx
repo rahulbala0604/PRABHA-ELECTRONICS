@@ -7,11 +7,12 @@ const Dashboard = () => {
   const [stats, setStats] = useState({
     totalProducts: 0,
     activeProducts: 0,
-    totalOrders: 0,
-    totalCustomers: 0,
     totalEnquiries: 0,
     newEnquiries: 0,
     resolvedEnquiries: 0,
+    contactedEnquiries: 0,
+    totalCategories: 0,
+    totalBrands: 0,
     recentEnquiries: []
   });
   const [loading, setLoading] = useState(true);
@@ -70,18 +71,18 @@ const Dashboard = () => {
               <Users size={24} />
             </div>
             <div>
-              <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">Total Customers</p>
-              <h3 className="text-2xl font-extrabold text-primary">{stats.totalCustomers}</h3>
+              <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">New Enquiries</p>
+              <h3 className="text-2xl font-extrabold text-primary">{stats.newEnquiries}</h3>
             </div>
           </div>
           
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition-shadow">
             <div className="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center text-orange-600 border border-orange-100">
-              <IndianRupee size={24} />
+              <Package size={24} />
             </div>
             <div>
-              <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">New Enquiries</p>
-              <h3 className="text-2xl font-extrabold text-primary">{stats.newEnquiries}</h3>
+              <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">Categories & Brands</p>
+              <h3 className="text-2xl font-extrabold text-primary">{stats.totalCategories + stats.totalBrands}</h3>
             </div>
           </div>
         </div>

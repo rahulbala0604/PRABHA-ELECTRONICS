@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -11,6 +12,7 @@ const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { success } = useToast();
 
   const redirect = location.search ? location.search.split('=')[1] : '/account';
 
@@ -20,6 +22,7 @@ const Login = () => {
     setError(null);
     try {
       await login(email, password);
+      success('Signed in successfully.');
       navigate(redirect);
     } catch (err) {
       setError(err.message);
@@ -36,9 +39,9 @@ const Login = () => {
         
         <form onSubmit={submitHandler}>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email or Username</label>
             <input 
-              type="email" 
+              type="text" 
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}

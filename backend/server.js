@@ -12,19 +12,29 @@ const PORT = process.env.PORT || 5000;
 // Routes
 const productRoutes = require('./routes/productRoutes');
 const userRoutes = require('./routes/userRoutes');
-const orderRoutes = require('./routes/orderRoutes');
+
 const adminRoutes = require('./routes/adminRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const brandRoutes = require('./routes/brandRoutes');
 const enquiryRoutes = require('./routes/enquiryRoutes');
 
 // Middleware
-app.use(cors());
+const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : ['http://localhost:5173', 'http://localhost:3000'];
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
 app.use(express.json());
 
 app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/orders', orderRoutes);
+
 app.use('/api/admin', adminRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/brands', brandRoutes);

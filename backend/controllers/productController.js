@@ -5,7 +5,8 @@ const Product = require('../models/Product');
 // @access  Public
 const getProducts = async (req, res) => {
   try {
-    const products = await Product.find({});
+    const query = req.query.admin === 'true' ? {} : { isActive: true };
+    const products = await Product.find(query);
     res.json(products);
   } catch (error) {
     res.status(500).json({ message: 'Server Error' });
@@ -17,8 +18,14 @@ const getProducts = async (req, res) => {
 // @access  Public
 const getProductById = async (req, res) => {
   try {
+    if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
     const product = await Product.findById(req.params.id);
     if (product) {
+      if (!product.isActive && req.query.admin !== 'true') {
+        return res.status(404).json({ message: 'Product is inactive or not found' });
+      }
       res.json(product);
     } else {
       res.status(404).json({ message: 'Product not found' });
@@ -30,34 +37,37 @@ const getProductById = async (req, res) => {
 
 const createProduct = async (req, res) => {
   try {
+    const { name, sku, brand, category, originalPrice, salePrice, stock, images, description, features, specifications, isActive, warranty } = req.body;
     const product = new Product({
-      name: 'Sample Name',
-      brand: 'Sample Brand',
-      category: 'Sample Category',
-      originalPrice: 0,
-      salePrice: 0,
-      stock: 0,
-      images: ['/images/sample.jpg'],
-      description: 'Sample Description',
-      features: ['Sample Feature'],
-      specifications: { key: 'value' },
-      isActive: true,
-      user: req.user._id
+      name,
+      sku,
+      brand,
+      category,
+      originalPrice: originalPrice || 0,
+      salePrice: salePrice || 0,
+      stock: stock || 0,
+      images: images || [],
+      description,
+      features: features || [],
+      specifications: specifications || {},
+      isActive: isActive !== undefined ? isActive : true,
+      warranty: warranty || '',
     });
     const createdProduct = await product.save();
     res.status(201).json(createdProduct);
   } catch (error) {
-    res.status(500).json({ message: 'Server Error' });
+    res.status(500).json({ message: 'Server Error', error: error.message });
   }
 };
 
 const updateProduct = async (req, res) => {
   try {
-    const { name, brand, category, originalPrice, salePrice, stock, images, description, features, specifications, isActive } = req.body;
+    const { name, sku, brand, category, originalPrice, salePrice, stock, images, description, features, specifications, isActive, warranty } = req.body;
     const product = await Product.findById(req.params.id);
 
     if (product) {
       product.name = name || product.name;
+      product.sku = sku !== undefined ? sku : product.sku;
       product.brand = brand || product.brand;
       product.category = category || product.category;
       product.originalPrice = originalPrice !== undefined ? originalPrice : product.originalPrice;
@@ -68,6 +78,7 @@ const updateProduct = async (req, res) => {
       product.features = features || product.features;
       product.specifications = specifications || product.specifications;
       product.isActive = isActive !== undefined ? isActive : product.isActive;
+      product.warranty = warranty !== undefined ? warranty : product.warranty;
 
       const updatedProduct = await product.save();
       res.json(updatedProduct);
@@ -85,7 +96,7 @@ const deleteProduct = async (req, res) => {
     if (product) {
       product.isActive = false; // Soft delete
       await product.save();
-      res.json({ message: 'Product disabled (soft deleted)' });
+      res.json({ message: 'Product deactivated successfully' });
     } else {
       res.status(404).json({ message: 'Product not found' });
     }

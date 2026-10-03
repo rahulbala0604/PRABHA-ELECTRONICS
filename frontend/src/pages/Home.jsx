@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ShieldCheck, Truck, Clock, CreditCard, MessageCircle, MapPin, ChevronRight, ShoppingCart } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import ProductImage from '../components/ui/ProductImage';
+import { businessConfig } from '../config/businessConfig';
 
 const Home = () => {
   const { addToCart } = useCart();
@@ -14,7 +16,11 @@ const Home = () => {
         const res = await fetch('/api/products');
         if (res.ok) {
           const data = await res.json();
-          setFeaturedProducts(data.slice(0, 4)); // Get top 4 products
+          if (Array.isArray(data)) {
+            setFeaturedProducts(data.slice(0, 4)); // Get top 4 products
+          } else {
+            console.error("API did not return an array:", data);
+          }
         }
       } catch (error) {
         console.error("Failed to fetch featured products", error);
@@ -36,7 +42,7 @@ const Home = () => {
               <span className="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
               Premium Showroom
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-primary leading-tight mb-6 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-primary leading-tight mb-6 tracking-tight">
               EVERYTHING YOUR <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">HOME NEEDS.</span>
             </h1>
@@ -47,7 +53,7 @@ const Home = () => {
               <Link to="/shop" className="btn-primary flex items-center justify-center gap-2">
                 EXPLORE PRODUCTS <ChevronRight size={18} />
               </Link>
-              <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer" className="btn-outline flex items-center justify-center gap-2">
+              <a href={`https://wa.me/${businessConfig.whatsappNumber}`} target="_blank" rel="noreferrer" className="btn-outline flex items-center justify-center gap-2">
                 <MessageCircle size={18} /> WHATSAPP US
               </a>
             </div>
@@ -82,12 +88,12 @@ const Home = () => {
                     { name: 'Air Conditioners', icon: '❄️', count: '90+' },
                     { name: 'Kitchen Appliances', icon: '🍳', count: '150+' }
                 ].map((category, idx) => (
-                    <Link to={`/category/${category.name.toLowerCase().replace(' ', '-')}`} key={idx} className="bg-gray-50 p-6 rounded-2xl border border-gray-100 hover:shadow-lg hover:border-accent/50 transition-all duration-300 group flex flex-col items-center text-center">
-                        <div className="w-16 h-16 bg-white rounded-xl shadow-sm flex items-center justify-center text-3xl mb-4 group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-300">
+                    <Link to={`/category/${category.name.toLowerCase().replace(' ', '-')}`} key={idx} className="bg-gray-50 p-4 sm:p-6 rounded-2xl border border-gray-100 hover:shadow-lg hover:border-accent/50 transition-all duration-300 group flex flex-col items-center text-center">
+                        <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-xl shadow-sm flex items-center justify-center text-2xl sm:text-3xl mb-3 sm:mb-4 group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-300">
                           {category.icon}
                         </div>
-                        <h3 className="font-bold text-primary mb-1">{category.name}</h3>
-                        <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{category.count} Products</span>
+                        <h3 className="font-bold text-sm sm:text-base text-primary mb-1">{category.name}</h3>
+                        <span className="text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-wider">{category.count} Products</span>
                     </Link>
                 ))}
             </div>
@@ -118,9 +124,12 @@ const Home = () => {
                 {featuredProducts.map(product => (
                   <div key={product._id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group flex flex-col">
                     <div className="aspect-[4/3] bg-gray-50 flex items-center justify-center relative p-6">
-                      <div className="w-full h-full bg-white rounded-lg shadow-sm flex items-center justify-center group-hover:scale-105 transition-transform duration-500 border border-gray-100">
-                        <span className="text-gray-300 text-sm font-medium">{product.category}</span>
-                      </div>
+                      <ProductImage 
+                        src={product.images?.[0]} 
+                        alt={product.name} 
+                        className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500" 
+                        containerClassName="w-full h-full bg-white rounded-lg shadow-sm flex items-center justify-center border border-gray-100"
+                      />
                     </div>
                     <div className="p-5 flex flex-col flex-grow">
                       <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">{product.brand}</p>
@@ -202,10 +211,10 @@ const Home = () => {
             Not sure which product is right for you? Talk to our team. We'll help you find the perfect appliance for your home and budget.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer" className="btn-primary flex items-center justify-center gap-2">
+            <a href={`https://wa.me/${businessConfig.whatsappNumber}`} target="_blank" rel="noreferrer" className="btn-primary flex items-center justify-center gap-2">
               <MessageCircle size={20} /> WHATSAPP US
             </a>
-            <a href="tel:+919876543210" className="btn-outline border-white text-white hover:bg-white hover:text-primary flex items-center justify-center gap-2">
+            <a href={`tel:${businessConfig.phone.replace(/[^0-9+]/g, '')}`} className="btn-outline border-white text-white hover:bg-white hover:text-primary flex items-center justify-center gap-2">
               CALL NOW
             </a>
             <Link to="/contact" className="btn-outline border-white text-white hover:bg-white hover:text-primary flex items-center justify-center gap-2">

@@ -3,7 +3,12 @@ const generateToken = require('../utils/generateToken');
 
 const authUser = async (req, res) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ 
+    $or: [
+      { email: email },
+      { name: email }
+    ]
+  });
 
   if (user && (await user.matchPassword(password))) {
     res.json({

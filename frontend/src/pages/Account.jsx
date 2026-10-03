@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, Package, User, Settings } from 'lucide-react';
+import { LogOut, User, Settings } from 'lucide-react';
 
 const Account = () => {
   const { user, logout } = useAuth();
@@ -31,9 +31,7 @@ const Account = () => {
               <Link to="/account" className="flex items-center gap-3 p-3 text-accent font-medium bg-gray-50 rounded-md">
                 <User size={18} /> Profile Info
               </Link>
-              <Link to="/orders" className="flex items-center gap-3 p-3 text-gray-700 hover:bg-gray-50 rounded-md transition-colors">
-                <Package size={18} /> My Orders
-              </Link>
+
               {user?.isAdmin && (
                 <Link to="/admin" className="flex items-center gap-3 p-3 text-gray-700 hover:bg-gray-50 rounded-md transition-colors">
                   <Settings size={18} /> Admin Dashboard

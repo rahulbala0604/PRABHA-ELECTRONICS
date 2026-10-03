@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Save, ArrowLeft, Image as ImageIcon } from 'lucide-react';
+import ProductImage from '../../components/ui/ProductImage';
+import { useToast } from '../../context/ToastContext';
 
 const ProductEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { success } = useToast();
   
   const isAddMode = !id;
   
@@ -54,7 +57,7 @@ const ProductEdit = () => {
     
     const fetchProduct = async () => {
       try {
-        const res = await fetch(`/api/products/${id}`);
+        const res = await fetch(`/api/products/${id}?admin=true`);
         const data = await res.json();
         
         if (!res.ok) throw new Error(data.message || 'Failed to fetch product');
@@ -121,6 +124,7 @@ const ProductEdit = () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Operation failed');
       
+      success(`Product ${isAddMode ? 'created' : 'updated'} successfully`);
       navigate('/admin/products');
     } catch (err) {
       setError(err.message);
@@ -132,7 +136,7 @@ const ProductEdit = () => {
 
   return (
     <div className="max-w-4xl mx-auto pb-12">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div className="flex items-center gap-4">
           <Link to="/admin/products" className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
             <ArrowLeft size={20} />
@@ -251,8 +255,25 @@ const ProductEdit = () => {
           </h2>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Image URLs (Comma separated)</label>
-            <input type="text" name="images" value={formData.images} onChange={handleChange} placeholder="https://example.com/img1.jpg, https://example.com/img2.jpg" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-accent text-sm" />
-            <p className="text-xs text-gray-500 mt-2">In a production environment, this would integrate an image upload widget.</p>
+            <input type="text" name="images" value={formData.images} onChange={handleChange} placeholder="/assets/img1.jpg, https://example.com/img2.jpg" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-accent text-sm" />
+            <p className="text-xs text-gray-500 mt-2 mb-4">Enter relative paths (e.g., /assets/product.jpg) or absolute URLs.</p>
+            
+            {formData.images && (
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Image Preview</label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  {formData.images.split(',').map((img, idx) => {
+                    const cleanImg = img.trim();
+                    if (!cleanImg) return null;
+                    return (
+                      <div key={idx} className="aspect-square bg-gray-50 border border-gray-200 rounded-lg overflow-hidden">
+                        <ProductImage src={cleanImg} alt={`Preview ${idx + 1}`} className="w-full h-full object-contain p-2" />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

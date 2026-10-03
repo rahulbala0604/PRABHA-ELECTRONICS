@@ -37,6 +37,20 @@ export default {
       boxShadow: {
         'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
         'premium': '0 10px 40px -10px rgba(11, 31, 58, 0.1)',
+      },
+      keyframes: {
+        'slide-in-right': {
+          '0%': { transform: 'translateX(100%)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        'shrink-width': {
+          '0%': { width: '100%' },
+          '100%': { width: '0%' },
+        }
+      },
+      animation: {
+        'slide-in-right': 'slide-in-right 0.3s ease-out',
+        'shrink-width': 'shrink-width linear forwards',
       }
     },
   },

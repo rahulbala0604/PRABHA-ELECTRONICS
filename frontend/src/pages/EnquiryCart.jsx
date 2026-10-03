@@ -2,10 +2,14 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { MessageCircle, Trash2, ChevronLeft, ShoppingBag } from 'lucide-react';
+import ProductImage from '../components/ui/ProductImage';
+import { businessConfig } from '../config/businessConfig';
+import { useToast } from '../context/ToastContext';
 
 const EnquiryCart = () => {
   const { cartItems, removeFromCart, updateQuantity, clearCart } = useCart();
   const navigate = useNavigate();
+  const { success, error, info, warning } = useToast();
 
   const [customerDetails, setCustomerDetails] = useState({
     name: '',
@@ -17,10 +21,24 @@ const EnquiryCart = () => {
   
   const [isSending, setIsSending] = useState(false);
 
-  const WHATSAPP_NUMBER = '919876543210'; // In reality this comes from context/settings
+  const WHATSAPP_NUMBER = businessConfig.whatsappNumber;
 
   const handleSendEnquiry = async (e) => {
     e.preventDefault();
+    
+    // Validation
+    const phoneRegex = /^[0-9]{10}$/;
+    const cleanPhone = customerDetails.phone.replace(/[^0-9]/g, '');
+    if (!phoneRegex.test(cleanPhone)) {
+      warning('Please enter a valid 10-digit mobile number.');
+      return;
+    }
+    
+    if (cartItems.length === 0) {
+      warning('Please select at least one product.');
+      return;
+    }
+
     setIsSending(true);
 
     try {
@@ -38,11 +56,16 @@ const EnquiryCart = () => {
         }))
       };
 
-      await fetch('/api/enquiries', {
+      const res = await fetch('/api/enquiries', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
+      
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || 'Failed to submit enquiry');
+      }
 
       // 2. Generate WhatsApp URL
       let waMessage = `Hello Prabha Electronics,\n\nI am interested in the following products:\n\n`;
@@ -63,11 +86,13 @@ const EnquiryCart = () => {
 
       // 3. Clear cart and redirect
       clearCart();
+      success('Enquiry submitted successfully.');
+      info('Your enquiry is being prepared for WhatsApp.');
       window.open(waUrl, '_blank');
-      navigate('/order-success', { state: { isEnquiry: true } });
+      navigate('/shop');
 
-    } catch (error) {
-      alert("Something went wrong while sending your enquiry.");
+    } catch (err) {
+      error(err.message || "Unable to send enquiry. Please check your details.");
       setIsSending(false);
     }
   };
@@ -92,7 +117,7 @@ const EnquiryCart = () => {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen pb-20">
+    <div className="bg-gray-50 min-h-screen pb-28">
       {/* Page Header */}
       <div className="bg-white border-b border-gray-100 py-8 mb-8">
         <div className="container mx-auto px-4 md:px-6 max-w-6xl">
@@ -186,8 +211,12 @@ const EnquiryCart = () => {
                 {cartItems.map(item => (
                   <div key={item._id} className="flex gap-4">
                     <div className="w-20 h-20 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center flex-shrink-0 relative">
-                       {/* Placeholder for real image */}
-                      <span className="text-[10px] font-bold text-gray-300 uppercase">Image</span>
+                       <ProductImage 
+                         src={item.images?.[0]} 
+                         alt={item.name} 
+                         className="w-full h-full object-contain p-2" 
+                         containerClassName="w-full h-full bg-white rounded-xl shadow-sm border border-gray-100 flex items-center justify-center"
+                       />
                       <div className="absolute -top-2 -right-2 bg-accent text-white text-xs w-6 h-6 rounded-full flex items-center justify-center font-bold">
                         {item.quantity}
                       </div>

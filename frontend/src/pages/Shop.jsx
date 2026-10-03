@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Filter, ShoppingCart, Search, ChevronRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import ProductImage from '../components/ui/ProductImage';
 
 const Shop = () => {
   const { addToCart } = useCart();
@@ -15,7 +16,11 @@ const Shop = () => {
         const res = await fetch('/api/products');
         if (!res.ok) throw new Error('Failed to fetch products');
         const data = await res.json();
-        setProducts(data);
+        if (Array.isArray(data)) {
+          setProducts(data);
+        } else {
+          throw new Error('Invalid data format received from server');
+        }
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -135,9 +140,12 @@ const Shop = () => {
                           {Math.round(((product.originalPrice - product.salePrice) / product.originalPrice) * 100)}% OFF
                         </span>
                       )}
-                      <div className="w-full h-full bg-white rounded-lg shadow-sm flex items-center justify-center group-hover:scale-105 transition-transform duration-500 border border-gray-100">
-                        <span className="text-gray-300 text-sm font-medium">{product.category} Image</span>
-                      </div>
+                        <ProductImage 
+                          src={product.images?.[0]} 
+                          alt={product.name} 
+                          className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500" 
+                          containerClassName="w-full h-full bg-white rounded-lg shadow-sm flex items-center justify-center border border-gray-100"
+                        />
                     </div>
                     <div className="p-5 flex flex-col flex-grow">
                       <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">{product.brand}</p>
