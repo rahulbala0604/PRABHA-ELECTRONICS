@@ -1,7 +1,10 @@
 const Category = require('../models/Category');
+const { isAdmin } = require('../utils/authCheck');
 
 const getCategories = async (req, res) => {
-  const categories = await Category.find({});
+  const adminReq = req.query.admin === 'true' && (await isAdmin(req));
+  const query = adminReq ? {} : { isActive: true };
+  const categories = await Category.find(query);
   res.json(categories);
 };
 

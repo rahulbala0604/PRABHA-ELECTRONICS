@@ -62,8 +62,8 @@ const Header = () => {
 
           {/* Logo */}
           <Link to="/" className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight flex-shrink-0 uppercase">
-            <span className="text-primary">{businessConfig.name.split(' ')[0]}</span>
-            <span className="text-accent ml-1.5">{businessConfig.name.split(' ').slice(1).join(' ')}</span>
+            <span className="text-primary">{businessConfig.shopName.split(' ')[0]}</span>
+            <span className="text-accent ml-1.5">{businessConfig.shopName.split(' ').slice(1).join(' ')}</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -73,11 +73,14 @@ const Header = () => {
             <div className="group relative py-2 cursor-pointer">
               <span className="hover:text-accent transition-colors">Categories</span>
               <div className="absolute top-full left-0 w-48 bg-white shadow-xl rounded-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 flex flex-col py-2 z-50">
-                <Link to="/category/televisions" className="px-4 py-2 hover:bg-gray-50 hover:text-accent text-sm font-medium transition-colors">Televisions</Link>
                 <Link to="/category/refrigerators" className="px-4 py-2 hover:bg-gray-50 hover:text-accent text-sm font-medium transition-colors">Refrigerators</Link>
                 <Link to="/category/washing-machines" className="px-4 py-2 hover:bg-gray-50 hover:text-accent text-sm font-medium transition-colors">Washing Machines</Link>
                 <Link to="/category/air-conditioners" className="px-4 py-2 hover:bg-gray-50 hover:text-accent text-sm font-medium transition-colors">Air Conditioners</Link>
+                <Link to="/category/tvs" className="px-4 py-2 hover:bg-gray-50 hover:text-accent text-sm font-medium transition-colors">TVs</Link>
+                <Link to="/category/fans" className="px-4 py-2 hover:bg-gray-50 hover:text-accent text-sm font-medium transition-colors">Fans</Link>
                 <Link to="/category/kitchen-appliances" className="px-4 py-2 hover:bg-gray-50 hover:text-accent text-sm font-medium transition-colors">Kitchen Appliances</Link>
+                <Link to="/category/water-heaters" className="px-4 py-2 hover:bg-gray-50 hover:text-accent text-sm font-medium transition-colors">Water Heaters</Link>
+                <Link to="/category/air-coolers" className="px-4 py-2 hover:bg-gray-50 hover:text-accent text-sm font-medium transition-colors">Air Coolers</Link>
               </div>
             </div>
             <Link to="/about" className="hover:text-accent transition-colors hidden xl:block">About</Link>
@@ -188,7 +191,7 @@ const Header = () => {
               <span className="text-xs font-bold text-gray-400 uppercase tracking-wider px-4">Categories</span>
             </div>
             <div className="flex flex-col space-y-1">
-              {['televisions', 'refrigerators', 'washing-machines', 'air-conditioners'].map(cat => (
+              {['refrigerators', 'washing-machines', 'air-conditioners', 'tvs'].map(cat => (
                 <Link 
                   key={cat}
                   to={`/category/${cat}`} 

@@ -1,7 +1,10 @@
 const Brand = require('../models/Brand');
+const { isAdmin } = require('../utils/authCheck');
 
 const getBrands = async (req, res) => {
-  const brands = await Brand.find({});
+  const adminReq = req.query.admin === 'true' && (await isAdmin(req));
+  const query = adminReq ? {} : { isActive: true };
+  const brands = await Brand.find(query);
   res.json(brands);
 };
 

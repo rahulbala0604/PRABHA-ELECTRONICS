@@ -17,6 +17,8 @@ const adminRoutes = require('./routes/adminRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const brandRoutes = require('./routes/brandRoutes');
 const enquiryRoutes = require('./routes/enquiryRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
+const path = require('path');
 
 // Middleware
 const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : ['http://localhost:5173', 'http://localhost:3000'];
@@ -39,6 +41,10 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/brands', brandRoutes);
 app.use('/api/enquiries', enquiryRoutes);
+app.use('/api/upload', uploadRoutes);
+
+const __dirnameCwd = path.resolve();
+app.use('/uploads', express.static(path.join(__dirnameCwd, '/uploads')));
 
 // Basic Route
 app.get('/api/health', (req, res) => {

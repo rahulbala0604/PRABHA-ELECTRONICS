@@ -16,7 +16,10 @@ const protect = async (req, res, next) => {
       next();
     } catch (error) {
       console.error(error);
-      res.status(401).json({ message: 'Not authorized, token failed' });
+      if (error.name === 'TokenExpiredError') {
+        return res.status(401).json({ message: 'Your admin session has expired. Please login again.' });
+      }
+      return res.status(401).json({ message: 'Not authorized, token failed' });
     }
   }
 

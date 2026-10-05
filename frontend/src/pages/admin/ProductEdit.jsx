@@ -40,8 +40,8 @@ const ProductEdit = () => {
     const fetchDropdowns = async () => {
       try {
         const [catRes, brandRes] = await Promise.all([
-          fetch('/api/categories'),
-          fetch('/api/brands')
+          fetch('/api/categories?admin=true', { headers: { Authorization: `Bearer ${user.token}` } }),
+          fetch('/api/brands?admin=true', { headers: { Authorization: `Bearer ${user.token}` } })
         ]);
         if(catRes.ok) setCategories(await catRes.json());
         if(brandRes.ok) setBrands(await brandRes.json());
@@ -72,7 +72,7 @@ const ProductEdit = () => {
           salePrice: data.salePrice || 0,
           stock: data.stock || 0,
           features: data.features ? data.features.join('\n') : '',
-          specifications: data.specifications ? JSON.stringify(data.specifications, null, 2) : '',
+          specifications: data.specifications ? Object.entries(data.specifications).map(([k, v]) => `${k}: ${v}`).join('\n') : '',
           warranty: data.warranty || '',
           images: data.images ? data.images.join(',') : '',
           isActive: data.isActive !== false
@@ -95,6 +95,41 @@ const ProductEdit = () => {
     }));
   };
 
+  const handleImageUpload = async (e) => {
+    const files = e.target.files;
+    if (!files.length) return;
+    
+    setSaving(true);
+    try {
+      const uploadPromises = Array.from(files).map(async (file) => {
+        const fileData = new FormData();
+        fileData.append('image', file);
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${user.token}`
+          },
+          body: fileData
+        });
+        if (!res.ok) throw new Error('Upload failed');
+        return await res.text();
+      });
+      
+      const paths = await Promise.all(uploadPromises);
+      const newImages = paths.join(',');
+      
+      setFormData(prev => ({
+        ...prev,
+        images: prev.images ? `${prev.images},${newImages}` : newImages
+      }));
+      success('Images uploaded successfully');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
@@ -102,11 +137,21 @@ const ProductEdit = () => {
     
     try {
       // Prepare payload
+      let parsedSpecs = {};
+      if (formData.specifications) {
+         formData.specifications.split('\n').forEach(line => {
+            const [key, ...valParts] = line.split(':');
+            if (key && valParts.length) {
+               parsedSpecs[key.trim()] = valParts.join(':').trim();
+            }
+         });
+      }
+
       const payload = {
         ...formData,
         features: formData.features.split('\n').filter(f => f.trim() !== ''),
         images: formData.images.split(',').map(i => i.trim()).filter(i => i !== ''),
-        specifications: formData.specifications ? JSON.parse(formData.specifications) : {}
+        specifications: parsedSpecs
       };
       
       const method = isAddMode ? 'POST' : 'PUT';
@@ -238,8 +283,8 @@ const ProductEdit = () => {
               <textarea name="features" rows="4" value={formData.features} onChange={handleChange} placeholder="e.g. 4K Ultra HD&#10;Dolby Audio&#10;Smart TV" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-accent text-sm"></textarea>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Specifications (JSON format)</label>
-              <textarea name="specifications" rows="4" value={formData.specifications} onChange={handleChange} placeholder='{"Display": "LED", "Size": "55 inch"}' className="w-full font-mono text-xs border border-gray-300 rounded-md py-2 px-3 focus:outline-accent"></textarea>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Specifications (One per line)</label>
+              <textarea name="specifications" rows="4" value={formData.specifications} onChange={handleChange} placeholder="Display: LED&#10;Size: 55 inch" className="w-full text-sm border border-gray-300 rounded-md py-2 px-3 focus:outline-accent"></textarea>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Warranty Information</label>
@@ -254,9 +299,9 @@ const ProductEdit = () => {
             <ImageIcon size={18} /> Images
           </h2>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Image URLs (Comma separated)</label>
-            <input type="text" name="images" value={formData.images} onChange={handleChange} placeholder="/assets/img1.jpg, https://example.com/img2.jpg" className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-accent text-sm" />
-            <p className="text-xs text-gray-500 mt-2 mb-4">Enter relative paths (e.g., /assets/product.jpg) or absolute URLs.</p>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Upload Images</label>
+            <input type="file" multiple accept="image/*" onChange={handleImageUpload} className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-accent text-sm" />
+            <p className="text-xs text-gray-500 mt-2 mb-4">You can select multiple images at once.</p>
             
             {formData.images && (
               <div className="mt-4">

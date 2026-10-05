@@ -12,11 +12,11 @@ const Footer = () => {
           {/* Brand & About */}
           <div className="lg:pr-6">
             <Link to="/" className="text-2xl font-extrabold tracking-tight block mb-6 uppercase">
-              <span className="text-white">{businessConfig.name.split(' ')[0]}</span>
-              <span className="text-accent ml-1.5">{businessConfig.name.split(' ').slice(1).join(' ')}</span>
+              <span className="text-white">{businessConfig.shopName.split(' ')[0]}</span>
+              <span className="text-accent ml-1.5">{businessConfig.shopName.split(' ').slice(1).join(' ')}</span>
             </Link>
             <p className="text-sm mb-6 leading-relaxed text-gray-400">
-              Your trusted local destination for premium home appliances. We bring you the best brands with exceptional showroom service and support since {businessConfig.establishedYear}.
+              Your trusted local destination for premium home appliances. We bring you the best brands with exceptional showroom service and support since 2005.
             </p>
             <div className="flex space-x-4">
               {['FB', 'IG', 'TW'].map((social, idx) => (
@@ -74,7 +74,7 @@ const Footer = () => {
             <ul className="space-y-5">
               <li className="flex items-start">
                 <MapPin size={22} className="text-accent mr-3 mt-0.5 flex-shrink-0" />
-                <span className="text-sm text-gray-400 leading-relaxed">{businessConfig.addressLine1}<br />{businessConfig.addressLine2}</span>
+                <span className="text-sm text-gray-400 leading-relaxed">{businessConfig.address}</span>
               </li>
               <li className="flex items-center">
                 <Phone size={20} className="text-accent mr-3 flex-shrink-0" />
@@ -86,14 +86,14 @@ const Footer = () => {
               </li>
               <li className="flex items-center">
                 <Clock size={20} className="text-accent mr-3 flex-shrink-0" />
-                <span className="text-sm text-gray-400">Mon - Sun: 10:00 AM - 9:00 PM</span>
+                <span className="text-sm text-gray-400">{businessConfig.openingHours}</span>
               </li>
             </ul>
           </div>
         </div>
 
         <div className="border-t border-primary-light pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
-          <p>&copy; {new Date().getFullYear()} {businessConfig.name}. All Rights Reserved.</p>
+          <p>&copy; {new Date().getFullYear()} {businessConfig.shopName}. All Rights Reserved.</p>
           <div className="mt-4 md:mt-0 flex space-x-2">
             <span>Premium Home Appliances Showroom</span>
           </div>

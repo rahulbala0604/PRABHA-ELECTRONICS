@@ -1,11 +1,13 @@
 const Product = require('../models/Product');
+const { isAdmin } = require('../utils/authCheck');
 
 // @desc    Fetch all products
 // @route   GET /api/products
 // @access  Public
 const getProducts = async (req, res) => {
   try {
-    const query = req.query.admin === 'true' ? {} : { isActive: true };
+    const adminReq = req.query.admin === 'true' && (await isAdmin(req));
+    const query = adminReq ? {} : { isActive: true };
     const products = await Product.find(query);
     res.json(products);
   } catch (error) {
@@ -23,7 +25,8 @@ const getProductById = async (req, res) => {
     }
     const product = await Product.findById(req.params.id);
     if (product) {
-      if (!product.isActive && req.query.admin !== 'true') {
+      const adminReq = req.query.admin === 'true' && (await isAdmin(req));
+      if (!product.isActive && !adminReq) {
         return res.status(404).json({ message: 'Product is inactive or not found' });
       }
       res.json(product);

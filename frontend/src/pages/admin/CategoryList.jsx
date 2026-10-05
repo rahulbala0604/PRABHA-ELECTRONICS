@@ -19,7 +19,9 @@ const CategoryList = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch('/api/categories');
+      const res = await fetch('/api/categories?admin=true', {
+        headers: { Authorization: `Bearer ${user.token}` }
+      });
       setCategories(await res.json());
       setLoading(false);
     } catch (err) {
@@ -40,6 +42,26 @@ const CategoryList = () => {
     setFormData({ name: cat.name, description: cat.description || '', image: cat.image || '', isActive: cat.isActive });
     setEditingId(cat._id);
     setShowModal(true);
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    try {
+      const fileData = new FormData();
+      fileData.append('image', file);
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${user.token}` },
+        body: fileData
+      });
+      if (!res.ok) throw new Error('Upload failed');
+      const path = await res.text();
+      setFormData({ ...formData, image: path });
+    } catch (err) {
+      error(err.message);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -218,8 +240,8 @@ const CategoryList = () => {
                   <textarea rows="3" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-accent"></textarea>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-                  <input type="text" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-accent" />
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Upload Image</label>
+                  <input type="file" accept="image/*" onChange={handleImageUpload} className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-accent" />
                   {formData.image && (
                     <div className="mt-2 w-16 h-16 border border-gray-200 rounded overflow-hidden">
                       <ProductImage src={formData.image} className="w-full h-full object-cover" />

@@ -16,6 +16,28 @@ export const AuthProvider = ({ children }) => {
       setUser(JSON.parse(userInfo));
     }
     setLoading(false);
+
+    // Global fetch interceptor for expired sessions
+    const originalFetch = window.fetch;
+    window.fetch = async (...args) => {
+      const response = await originalFetch(...args);
+      if (response.status === 401) {
+        const clone = response.clone();
+        try {
+          const data = await clone.json();
+          if (data.message === 'Your admin session has expired. Please login again.') {
+            setUser(null);
+            localStorage.removeItem('prabhaUser');
+            window.location.href = '/login';
+          }
+        } catch(e) {}
+      }
+      return response;
+    };
+    
+    return () => {
+      window.fetch = originalFetch;
+    };
   }, []);
 
   const login = async (email, password) => {
