@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { Filter, ShoppingCart, Search, ChevronRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import ProductImage from '../components/ui/ProductImage';
 
 const Shop = () => {
+  const { categoryName } = useParams();
   const { addToCart } = useCart();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,6 +30,16 @@ const Shop = () => {
     };
     fetchProducts();
   }, []);
+
+  const displayProducts = React.useMemo(() => {
+    let filtered = products;
+    if (categoryName) {
+      const targetCat = categoryName.replace(/-/g, ' ').toLowerCase();
+      // Handle "tvs" as a special case for "televisions" if needed, but assuming direct match for now
+      filtered = filtered.filter(p => (p.category || '').toLowerCase().includes(targetCat) || targetCat.includes((p.category || '').toLowerCase()));
+    }
+    return filtered;
+  }, [products, categoryName]);
 
   return (
     <div className="bg-gray-50 min-h-screen pb-16">
@@ -100,7 +111,7 @@ const Shop = () => {
           {/* Product Grid */}
           <div className="flex-1">
             <div className="hidden md:flex justify-between items-center mb-8 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-              <span className="font-semibold text-gray-500">Showing <span className="text-primary">{products.length}</span> Products</span>
+              <span className="font-semibold text-gray-500">Showing <span className="text-primary">{displayProducts.length}</span> Products</span>
               <div className="flex items-center gap-3">
                 <span className="text-sm font-medium text-gray-500">Sort by:</span>
                 <select className="border border-gray-200 bg-gray-50 rounded-lg py-2 px-4 font-medium text-sm text-primary focus:outline-none focus:border-primary focus:bg-white transition-colors cursor-pointer">
@@ -124,7 +135,7 @@ const Shop = () => {
                 <p className="text-red-700 mb-4">{error}</p>
                 <button onClick={() => window.location.reload()} className="btn-primary py-2 text-sm bg-red-600 hover:bg-red-700">Try Again</button>
               </div>
-            ) : products.length === 0 ? (
+            ) : displayProducts.length === 0 ? (
               <div className="text-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
                 <Search className="mx-auto h-16 w-16 text-gray-200 mb-4" />
                 <h3 className="text-xl font-bold text-primary mb-2">No products found</h3>
@@ -132,7 +143,7 @@ const Shop = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {products.map(product => (
+                {displayProducts.map(product => (
                   <div key={product._id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group flex flex-col">
                     <div className="aspect-[4/3] bg-gray-50 flex items-center justify-center relative p-6">
                       {product.originalPrice > product.salePrice && (

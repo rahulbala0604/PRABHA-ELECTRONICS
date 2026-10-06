@@ -11,9 +11,12 @@ const Footer = () => {
           
           {/* Brand & About */}
           <div className="lg:pr-6">
-            <Link to="/" className="text-2xl font-extrabold tracking-tight block mb-6 uppercase">
-              <span className="text-white">{businessConfig.shopName.split(' ')[0]}</span>
-              <span className="text-accent ml-1.5">{businessConfig.shopName.split(' ').slice(1).join(' ')}</span>
+            <Link to="/" className="flex items-center gap-3 mb-6">
+              <img src="/logo.png" alt={businessConfig.shopName} className="h-10 w-auto object-contain rounded-md" />
+              <div className="flex flex-col justify-center">
+                <span className="text-xl font-extrabold tracking-tight uppercase leading-none text-white">{businessConfig.shopName.split(' ')[0]}</span>
+                <span className="text-xs font-bold tracking-widest uppercase leading-none text-accent mt-1">{businessConfig.shopName.split(' ').slice(1).join(' ')}</span>
+              </div>
             </Link>
             <p className="text-sm mb-6 leading-relaxed text-gray-400">
               Your trusted local destination for premium home appliances. We bring you the best brands with exceptional showroom service and support since 2005.

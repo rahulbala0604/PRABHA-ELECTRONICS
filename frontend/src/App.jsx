@@ -25,6 +25,7 @@ import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import { ProtectedRoute, AdminRoute } from './components/ProtectedRoute';
 import ToastContainer from './components/ui/ToastContainer';
+import ScrollToTop from './components/ScrollToTop';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
         <CartProvider>
           <ToastContainer />
         <BrowserRouter>
+          <ScrollToTop />
             <Routes>
               {/* Public Routes */}
               <Route element={<PublicLayout />}>
@@ -56,6 +58,7 @@ function App() {
                 <Route path="/privacy" element={<div className="container mx-auto px-6 py-20 md:p-20 text-center"><h2 className="text-3xl font-bold text-primary mb-4">Privacy Policy</h2><p className="text-gray-600">Privacy Policy content coming soon.</p></div>} />
                 <Route path="/terms" element={<div className="container mx-auto px-6 py-20 md:p-20 text-center"><h2 className="text-3xl font-bold text-primary mb-4">Terms of Service</h2><p className="text-gray-600">Terms of Service content coming soon.</p></div>} />
                 <Route path="/categories" element={<Navigate to="/shop" replace />} />
+                <Route path="/category/:categoryName" element={<Shop />} />
                 <Route path="*" element={<div className="container mx-auto px-6 py-20 md:p-20 text-center"><h2 className="text-3xl font-bold">404 - Page Not Found</h2></div>} />
               </Route>
               

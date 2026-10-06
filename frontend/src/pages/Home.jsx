@@ -60,12 +60,17 @@ const Home = () => {
           </div>
           <div className="lg:w-1/2 flex justify-center relative">
             <div className="absolute -inset-4 bg-gradient-to-tr from-accent/20 to-primary/10 rounded-[2.5rem] blur-2xl -z-10"></div>
-            <div className="w-full max-w-lg aspect-[4/3] bg-white rounded-2xl shadow-premium border border-gray-100 flex flex-col items-center justify-center p-8 relative overflow-hidden group">
-                <div className="absolute inset-0 bg-gray-50/50 group-hover:bg-transparent transition-colors duration-500"></div>
-                <div className="text-primary text-center z-10">
-                    <span className="text-6xl mb-4 block">🏢</span>
-                    <p className="font-bold text-xl mb-2">Showroom Visual</p>
-                    <p className="text-sm text-gray-500 font-medium">Premium Home Appliances</p>
+            <div className="w-full max-w-lg aspect-[4/3] bg-white rounded-2xl shadow-premium border border-gray-100 flex flex-col items-center justify-center relative overflow-hidden group">
+                <img 
+                  src="/showroom_hero.png" 
+                  alt="Premium Home Appliances Showroom" 
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6">
+                   <div className="text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                      <p className="font-bold text-xl mb-1">Visit Our Showroom</p>
+                      <p className="text-sm text-white/90">Experience premium appliances in person</p>
+                   </div>
                 </div>
             </div>
           </div>
@@ -199,9 +204,11 @@ const Home = () => {
 
       {/* Showroom CTA */}
       <section className="py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-primary z-0"></div>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-accent opacity-20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary opacity-40 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/3"></div>
+        <div className="absolute inset-0 bg-primary z-0">
+          <img src="/cta_bg.png" alt="Showroom Background" className="w-full h-full object-cover opacity-30 mix-blend-overlay" />
+        </div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-accent opacity-40 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary opacity-50 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/3"></div>
         
         <div className="container mx-auto px-4 md:px-6 relative z-10 text-center">
           <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6 tracking-tight">

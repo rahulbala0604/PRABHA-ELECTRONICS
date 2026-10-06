@@ -61,9 +61,12 @@ const Header = () => {
           </button>
 
           {/* Logo */}
-          <Link to="/" className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight flex-shrink-0 uppercase">
-            <span className="text-primary">{businessConfig.shopName.split(' ')[0]}</span>
-            <span className="text-accent ml-1.5">{businessConfig.shopName.split(' ').slice(1).join(' ')}</span>
+          <Link to="/" className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+            <img src="/logo.png" alt={businessConfig.shopName} className="h-10 sm:h-12 w-auto object-contain rounded-md" />
+            <div className="flex flex-col justify-center">
+              <span className="text-lg sm:text-2xl font-extrabold tracking-tight uppercase leading-none text-primary">{businessConfig.shopName.split(' ')[0]}</span>
+              <span className="text-[10px] sm:text-xs font-bold tracking-widest uppercase leading-none text-accent mt-1">{businessConfig.shopName.split(' ').slice(1).join(' ')}</span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
