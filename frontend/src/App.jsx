@@ -29,12 +29,12 @@ import ScrollToTop from './components/ScrollToTop';
 
 function App() {
   return (
-    <AuthProvider>
-      <ToastProvider>
-        <CartProvider>
-          <ToastContainer />
-        <BrowserRouter>
-          <ScrollToTop />
+    <BrowserRouter>
+      <AuthProvider>
+        <ToastProvider>
+          <CartProvider>
+            <ToastContainer />
+            <ScrollToTop />
             <Routes>
               {/* Public Routes */}
               <Route element={<PublicLayout />}>
@@ -76,10 +76,10 @@ function App() {
                  </Route>
               </Route>
             </Routes>
-        </BrowserRouter>
-        </CartProvider>
-      </ToastProvider>
-    </AuthProvider>
+          </CartProvider>
+        </ToastProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 

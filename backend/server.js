@@ -18,6 +18,7 @@ const categoryRoutes = require('./routes/categoryRoutes');
 const brandRoutes = require('./routes/brandRoutes');
 const enquiryRoutes = require('./routes/enquiryRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
+const cartRoutes = require('./routes/cartRoutes');
 const path = require('path');
 
 // Middleware
@@ -42,6 +43,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/brands', brandRoutes);
 app.use('/api/enquiries', enquiryRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/cart', cartRoutes);
 
 const __dirnameCwd = path.resolve();
 app.use('/uploads', express.static(path.join(__dirnameCwd, '/uploads')));
